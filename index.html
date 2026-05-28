@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Consultor de Notas</title>
+<link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --auburn: #A3161A;
+  --auburn-dark: #7a1013;
+  --gold: #C9A227;
+  --gold-light: #e8bc30;
+  --gold-muted: rgba(201,162,39,0.15);
+  --purple: #7c3aed;
+  --purple-soft: rgba(124,58,237,0.18);
+  --purple-border: rgba(124,58,237,0.35);
+  --radius: 6px;
+  --transition: 0.3s ease;
+}
+
+[data-theme="dark"] {
+  --bg: #1a1a1a;
+  --surface: #242424;
+  --surface2: #2a2a2a;
+  --surface3: #303030;
+  --text: #f0f0f0;
+  --text-muted: #777;
+  --border: rgba(163,22,26,0.25);
+  --border-soft: rgba(255,255,255,0.06);
+  --shadow: 0 1px 6px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.35);
+  --input-bg: #1a1a1a;
+  --header-bg: #A3161A;
+  --logo-fill: #ffffff;
+  --win-bg: rgba(39,174,96,0.08);
+  --win-border: rgba(39,174,96,0.2);
+  --lose-bg: rgba(163,22,26,0.12);
+  --lose-border: rgba(163,22,26,0.3);
+  --warn-bg: rgba(201,162,39,0.08);
+  --warn-border: rgba(201,162,39,0.2);
+  --neutral-bg: #242424;
+  --neutral-border: rgba(163,22,26,0.2);
+  --progress-track: rgba(255,255,255,0.07);
+  --section-color: rgba(201,162,39,0.6);
+  --section-line: rgba(255,255,255,0.06);
+  --toggle-bg: rgba(124,58,237,0.15);
+  --toggle-border: var(--purple-border);
+  --toggle-color: #c8b8ff;
+  --footer-color: #444;
+  --modal-bg: #242424;
+  --modal-border: rgba(163,22,26,0.2);
+  --card-border-top: rgba(163,22,26,0.4);
+  --pg-border-top: rgba(201,162,39,0.5);
+}
+
+[data-theme="light"] {
+  --bg: #f0eeeb;
+  --surface: #ffffff;
+  --surface2: #faf9f7;
+  --surface3: #f5f2ef;
+  --text: #1a1a1a;
+  --text-muted: #888;
+  --border: rgba(163,22,26,0.1);
+  --border-soft: rgba(163,22,26,0.06);
+  --shadow: 0 1px 3px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 20px rgba(163,22,26,0.1);
+  --input-bg: #f5f3f0;
+  --header-bg: #A3161A;
+  --logo-fill: #ffffff;
+  --win-bg: linear-gradient(135deg,#f0faf5,#e6f7ef);
+  --win-border: rgba(39,174,96,0.2);
+  --lose-bg: linear-gradient(135deg,#fff5f5,#fdeaea);
+  --lose-border: rgba(163,22,26,0.2);
+  --warn-bg: linear-gradient(135deg,#fffbf0,#fdf5dc);
+  --warn-border: rgba(201,162,39,0.25);
+  --neutral-bg: linear-gradient(135deg,#fafafa,#f5f3ef);
+  --neutral-border: rgba(163,22,26,0.1);
+  --progress-track: rgba(0,0,0,0.07);
+  --section-color: #A3161A;
+  --section-line: rgba(163,22,26,0.12);
+  --toggle-bg: #fff;
+  --toggle-border: rgba(163,22,26,0.2);
+  --toggle-color: #A3161A;
+  --footer-color: #bbb;
+  --modal-bg: #ffffff;
+  --modal-border: rgba(163,22,26,0.12);
+  --card-border-top: rgba(163,22,26,0.25);
+  --pg-border-top: #C9A227;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Red Hat Display', sans-serif; min-height: 100vh; transition: background var(--transition), color var(--transition); }
+
+.top-header { background: var(--header-bg); position: relative; overflow: hidden; }
+.top-header::after { content: ''; position: absolute; bottom: -60px; right: -60px; width: 200px; height: 200px; background: var(--auburn-dark); border-radius: 50%; opacity: 0.3; }
+.top-header::before { content: ''; position: absolute; top: -30px; left: 45%; width: 140px; height: 140px; background: rgba(201,162,39,0.08); border-radius: 50%; }
+.header-inner { position: relative; z-index: 2; padding: 20px 24px 18px; display: flex; flex-direction: column; gap: 14px; }
+.header-top-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+
+.cuc-logo { display: flex; align-items: center; gap: 10px; }
+.cuc-logo svg g { fill: var(--logo-fill) !important; stroke: var(--logo-fill) !important; }
+.cuc-wordmark { display: flex; flex-direction: column; line-height: 1.2; }
+.cuc-wordmark span:first-child { font-size: 10px; font-weight: 300; color: rgba(255,255,255,0.6); letter-spacing: 0.08em; text-transform: uppercase; }
+.cuc-wordmark span:last-child { font-size: 12px; font-weight: 700; color: #fff; letter-spacing: 0.04em; text-transform: uppercase; }
+
+.header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; flex-shrink: 0; }
+.theme-toggle { background: var(--toggle-bg); border: 1.5px solid var(--toggle-border); border-radius: var(--radius); padding: 5px 11px; cursor: pointer; font-family: 'Red Hat Display', sans-serif; font-size: 11px; font-weight: 600; color: var(--toggle-color); display: flex; align-items: center; gap: 6px; transition: background 0.2s; }
+[data-theme="dark"] .theme-toggle:hover { background: rgba(124,58,237,0.25); }
+[data-theme="light"] .theme-toggle:hover { background: var(--surface3); }
+.toggle-icon { font-size: 13px; }
+
+.quick-links { display: flex; align-items: center; gap: 2px; }
+.ql-btn { display: inline-flex; align-items: center; padding: 5px 9px; border-radius: var(--radius); border: none; background: transparent; cursor: pointer; text-decoration: none; position: relative; transition: background 0.2s; }
+.ql-btn:hover { background: rgba(255,255,255,0.08); }
+.ql-btn:hover span { color: #e8bc30; }
+.ql-btn:hover::after { background: #e8bc30; transform: scaleX(1); }
+.ql-btn::after { content: ''; position: absolute; bottom: 3px; left: 9px; right: 9px; height: 1.5px; background: rgba(255,255,255,0.3); border-radius: 99px; transition: background 0.2s, transform 0.2s; transform: scaleX(0.5); transform-origin: left; }
+.ql-btn span { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.8); letter-spacing: 0.05em; transition: color 0.2s; }
+.ql-sep { width: 1px; height: 10px; background: rgba(255,255,255,0.18); margin: 0 1px; }
+
+.header-bottom-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.header-title { color: #fff; }
+.header-title h1 { font-size: 24px; font-weight: 900; line-height: 1.05; letter-spacing: -0.02em; }
+.header-title h1 span { color: var(--gold-light); }
+.header-title p { margin-top: 4px; font-size: 11px; font-weight: 300; color: rgba(255,255,255,0.6); line-height: 1.5; }
+
+.mobile-controls { display: none; align-items: center; gap: 6px; flex-shrink: 0; }
+.header-icon-btn { width: 28px; height: 28px; border-radius: 5px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; font-family: 'Red Hat Display', sans-serif; transition: background 0.2s; flex-shrink: 0; }
+.header-icon-btn:hover { background: rgba(255,255,255,0.2); }
+.ql-menu-btn { width: 28px; height: 28px; border-radius: 5px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: background 0.2s; flex-shrink: 0; line-height: 1; }
+.ql-menu-btn:hover { background: rgba(255,255,255,0.2); }
+
+.ql-dropdown { display: none; position: fixed; background: #1a1a1a; border: 1px solid rgba(163,22,26,0.3); border-radius: 8px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.5); min-width: 190px; z-index: 9999; animation: dropIn 0.15s ease both; }
+.ql-dropdown.open { display: block; }
+@keyframes dropIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+.ql-toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.08); transition: background 0.15s; }
+.ql-toggle-row:hover { background: rgba(163,22,26,0.2); }
+.ql-toggle-label { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85); display: flex; align-items: center; gap: 8px; }
+.ql-toggle-pill { background: rgba(124,58,237,0.2); border: 1px solid rgba(124,58,237,0.4); border-radius: 4px; padding: 2px 8px; font-size: 10px; font-weight: 700; color: #c8b8ff; }
+.ql-divider { height: 1px; background: rgba(255,255,255,0.06); }
+.ql-item { display: flex; align-items: center; gap: 10px; padding: 11px 14px; color: rgba(255,255,255,0.85); font-size: 12px; font-weight: 600; text-decoration: none; transition: background 0.15s; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.ql-item:last-child { border-bottom: none; }
+.ql-item:hover { background: rgba(163,22,26,0.2); color: #fff; }
+.ql-item:hover .ql-item-sub { color: #e8bc30; }
+.ql-item-icon { font-size: 13px; flex-shrink: 0; }
+.ql-item-sub { font-size: 9px; font-weight: 400; color: rgba(255,255,255,0.4); display: block; margin-top: 1px; transition: color 0.15s; }
+
+
+.emma-quick { display: none; }
+
+.gold-rule { height: 2px; background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 40%, transparent 100%); }
+
+
+.main { padding: 20px 24px 40px; max-width: 1000px; margin: 0 auto; }
+
+
+.app-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.col-left { display: flex; flex-direction: column; gap: 6px; }
+
+.col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: sticky;
+  top: 20px;
+}
+
+.section-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--section-color); margin: 0 0 8px; display: flex; align-items: center; gap: 8px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--section-line); }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-top: 2px solid var(--card-border-top); border-radius: var(--radius); box-shadow: var(--shadow); overflow: visible; margin-bottom: 0; transition: background var(--transition); }
+.card-pg { background: var(--surface); border: 1px solid rgba(201,162,39,0.2); border-top: 2px solid var(--pg-border-top); border-radius: var(--radius); box-shadow: var(--shadow); overflow: visible; }
+
+.corte-main-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px; }
+.corte-num { width: 26px; height: 26px; border-radius: 50%; background: var(--auburn); color: #fff; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.corte-tag { background: var(--gold); color: #fff; font-size: 9px; font-weight: 900; padding: 3px 8px; border-radius: 3px; letter-spacing: 0.06em; text-transform: uppercase; flex-shrink: 0; }
+.corte-info { flex: 1; min-width: 0; }
+.corte-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.corte-sub { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+.corte-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.pts-group { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.pts-label { font-size: 9px; color: var(--text-muted); }
+
+.input-wrap { position: relative; }
+input.main-input { width: 68px; background: var(--input-bg); border: 1.5px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: 'Red Hat Display', sans-serif; font-size: 18px; font-weight: 700; text-align: center; padding: 6px 4px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; -moz-appearance: textfield; }
+input.main-input::-webkit-inner-spin-button, input.main-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+[data-theme="dark"]  input.main-input:focus { border-color: var(--purple); box-shadow: 0 0 0 2px var(--purple-soft); }
+[data-theme="light"] input.main-input:focus { border-color: var(--auburn); box-shadow: 0 0 0 2px rgba(163,22,26,0.1); }
+.card-pg input.main-input:focus { border-color: var(--gold) !important; box-shadow: 0 0 0 2px var(--gold-muted) !important; }
+input.main-input.adjusted { border-color: var(--gold) !important; box-shadow: 0 0 0 2px var(--gold-muted) !important; }
+
+.expand-btn { background: transparent; border-radius: 4px; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 13px; transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.25s; flex-shrink: 0; }
+[data-theme="dark"]  .expand-btn { border: 1px solid rgba(255,255,255,0.1); }
+[data-theme="light"] .expand-btn { border: 1px solid rgba(163,22,26,0.18); }
+.expand-btn:hover { color: var(--auburn); border-color: var(--auburn); }
+.expand-btn.open { transform: rotate(180deg); }
+[data-theme="dark"]  .expand-btn.open { border-color: var(--purple-border); color: #c8b8ff; background: var(--purple-soft); }
+[data-theme="light"] .expand-btn.open { border-color: var(--auburn); color: var(--auburn); background: rgba(163,22,26,0.05); }
+
+.sub-rows { max-height: 0; overflow: hidden; transition: max-height 0.35s cubic-bezier(.4,0,.2,1), opacity 0.25s; opacity: 0; }
+.sub-rows.open { max-height: 200px; opacity: 1; }
+.sub-row { display: flex; align-items: center; gap: 10px; padding: 9px 14px 9px 20px; border-top: 1px solid var(--border-soft); }
+.sub-accent { width: 2px; height: 24px; border-radius: 2px; background: var(--gold); flex-shrink: 0; opacity: 0.5; }
+.sub-info { flex: 1; }
+.sub-name { font-size: 11px; font-weight: 600; color: var(--text-muted); }
+.sub-hint { font-size: 9px; color: var(--text-muted); opacity: 0.7; }
+.sub-pts { font-size: 10px; color: var(--text-muted); min-width: 36px; text-align: right; }
+.sub-pts span { font-weight: 700; color: var(--gold); }
+input.sub-input { width: 62px; background: var(--input-bg); border-radius: 5px; color: var(--text); font-family: 'Red Hat Display', sans-serif; font-size: 15px; font-weight: 700; text-align: center; padding: 5px 4px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; -moz-appearance: textfield; }
+input.sub-input::-webkit-inner-spin-button, input.sub-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+[data-theme="dark"]  input.sub-input { border: 1.5px solid rgba(255,255,255,0.08); }
+[data-theme="light"] input.sub-input { border: 1.5px solid rgba(163,22,26,0.15); }
+[data-theme="dark"]  input.sub-input:focus { border-color: var(--purple); box-shadow: 0 0 0 2px var(--purple-soft); }
+[data-theme="light"] input.sub-input:focus { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold-muted); }
+input.sub-input.adjusted { border-color: var(--gold) !important; box-shadow: 0 0 0 2px var(--gold-muted) !important; }
+
+.btn-clear { display: block; width: 100%; margin-top: 6px; padding: 11px; background: transparent; border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-muted); font-family: 'Red Hat Display', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; transition: background 0.2s, border-color 0.2s, color 0.2s; }
+.btn-clear:hover { border-color: var(--auburn); color: var(--auburn); background: var(--surface); }
+
+.result-placeholder {
+  border: 1.5px solid var(--card-border-top);
+  border-top: 2px solid var(--auburn);
+  border-radius: var(--radius);
+  background: var(--surface);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 6px; min-height: 180px;
+  padding: 24px; text-align: center;
+}
+.ph-title { font-size: 12px; font-weight: 700; color: rgba(163,22,26,0.4); }
+[data-theme="light"] .ph-title { color: rgba(163,22,26,0.35); }
+.ph-sub { font-size: 10px; color: var(--text-muted); opacity: 0.5; line-height: 1.6; }
+
+.result-card { border-radius: var(--radius); padding: 18px; border: 1px solid var(--neutral-border); border-top: 2px solid var(--neutral-border); background: var(--neutral-bg); box-shadow: var(--shadow-md); transition: all var(--transition); }
+.result-card.win  { background: var(--win-bg);  border-color: var(--win-border);  border-top-color: #27ae60; }
+.result-card.lose { background: var(--lose-bg); border-color: var(--lose-border); border-top-color: var(--auburn); }
+.result-card.warn { background: var(--warn-bg); border-color: var(--warn-border); border-top-color: var(--gold); }
+
+.res-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.res-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+.win .res-label  { color: #27ae60; }
+.lose .res-label { color: var(--auburn); }
+.warn .res-label { color: var(--gold); }
+.neutral .res-label { color: var(--text-muted); }
+.res-big { font-size: 44px; font-weight: 900; line-height: 1; letter-spacing: -0.03em; }
+.win .res-big   { color: #27ae60; }
+.lose .res-big  { color: var(--auburn); }
+.warn .res-big  { color: var(--gold); }
+.neutral .res-big { color: var(--text); }
+.res-icon { width: 42px; height: 42px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.win .res-icon  { background: rgba(39,174,96,0.12); }
+.lose .res-icon { background: rgba(163,22,26,0.1); }
+.warn .res-icon { background: rgba(201,162,39,0.1); }
+.neutral .res-icon { background: rgba(89,89,89,0.08); }
+.res-desc { font-size: 12px; color: var(--text-muted); line-height: 1.7; }
+.res-desc strong { color: var(--text); font-weight: 700; }
+
+.progress-wrap { margin-top: 12px; }
+.progress-meta { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted); margin-bottom: 6px; }
+.progress-track { height: 5px; background: var(--progress-track); border-radius: 99px; position: relative; overflow: visible; }
+.progress-fill { height: 100%; border-radius: 99px; transition: width 0.5s cubic-bezier(.4,0,.2,1); overflow: hidden; position: relative; }
+.progress-fill::after { content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%; background: rgba(255,255,255,0.3); transform: skewX(-20deg); animation: shimmer 2.5s infinite; }
+@keyframes shimmer { 0%{left:-100%} 100%{left:200%} }
+.progress-min { position: absolute; top: -5px; left: 60%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
+.progress-min .tick { width: 2px; height: 14px; background: var(--auburn); border-radius: 99px; opacity: 0.4; }
+.progress-min .tick-label { font-size: 9px; color: var(--auburn); font-weight: 700; margin-top: 2px; opacity: 0.5; white-space: nowrap; }
+
+.distrib { border-radius: 6px; padding: 12px 14px; margin-top: 10px; }
+[data-theme="dark"]  .distrib { background: rgba(201,162,39,0.06); border: 1px solid rgba(201,162,39,0.15); }
+[data-theme="light"] .distrib { background: rgba(201,162,39,0.05); border: 1px solid rgba(201,162,39,0.2); }
+.distrib-title { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+.distrib-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+.distrib-row:last-child { margin-bottom: 0; }
+.distrib-name { font-size: 11px; font-weight: 600; min-width: 80px; color: var(--text-muted); }
+.distrib-bar-wrap { flex: 1; height: 5px; border-radius: 99px; overflow: hidden; background: var(--progress-track); }
+.distrib-bar { height: 100%; border-radius: 99px; transition: width 0.5s; }
+.distrib-val { font-size: 11px; font-weight: 700; min-width: 70px; text-align: right; color: var(--text); }
+.distrib-val span { font-size: 9px; font-weight: 400; color: var(--text-muted); }
+
+.ritmo { display: flex; align-items: center; gap: 8px; border-radius: 6px; padding: 10px 14px; margin-top: 8px; }
+[data-theme="dark"]  .ritmo { background: rgba(255,255,255,0.04); }
+[data-theme="light"] .ritmo { background: rgba(0,0,0,0.03); }
+.ritmo-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+.breakdown { margin-top: 12px; border-top: 1px solid var(--border-soft); padding-top: 10px; }
+.brow-title { font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+.brow-row { display: flex; justify-content: space-between; padding: 3px 0; font-size: 11px; color: var(--text-muted); }
+.brow-row .bv { font-weight: 700; color: var(--text); font-size: 12px; }
+.brow-row.total { border-top: 1px solid var(--border-soft); margin-top: 5px; padding-top: 8px; font-size: 12px; font-weight: 700; color: var(--text); }
+.brow-row.total .bv { font-size: 14px; color: var(--auburn); }
+
+.col-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 4px;
+}
+.action-btns { display: flex; gap: 6px; }
+.action-btn {
+  width: 34px; height: 34px; border-radius: var(--radius);
+  background: transparent; border: 2px solid var(--auburn);
+  color: var(--auburn); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+  font-family: 'Red Hat Display', sans-serif;
+  transition: background 0.2s, transform 0.15s;
+  box-shadow: 0 2px 8px rgba(163,22,26,0.12);
+}
+.action-btn:hover { background: rgba(163,22,26,0.06); transform: scale(1.05); }
+
+.firma {
+  font-size: 10px; color: var(--footer-color);
+  display: flex; align-items: center; gap: 4px;
+}
+.firma a { text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 3px; transition: opacity 0.2s; }
+.firma a:hover { opacity: 0.75; }
+[data-theme="dark"]  .firma a { color: #9b7dff; }
+[data-theme="light"] .firma a { color: var(--auburn); }
+
+.version { font-size: 10px; color: #555; }
+
+.bubble { display: none; position: fixed; background: #1a1a1a; color: #fff; font-size: 11px; font-weight: 400; line-height: 1.6; padding: 9px 13px; border-radius: 8px; border-left: 3px solid var(--gold); z-index: 9999; box-shadow: 0 4px 16px rgba(0,0,0,0.3); pointer-events: none; max-width: 220px; white-space: normal; animation: bubbleIn 0.15s ease both; }
+.bubble.desktop::after { content: ''; position: absolute; top: 100%; left: 16px; border: 6px solid transparent; border-top-color: #1a1a1a; }
+.bubble.mobile::after { content: ''; position: absolute; top: 50%; right: -12px; transform: translateY(-50%); border: 6px solid transparent; border-left-color: #1a1a1a; }
+.bubble.visible { display: block; }
+@keyframes bubbleIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+
+.ql-tip { display: none; position: fixed; background: #1a1a1a; color: #fff; font-size: 11px; font-weight: 400; line-height: 1.6; padding: 8px 12px; border-radius: 8px; white-space: nowrap; z-index: 9999; box-shadow: 0 4px 16px rgba(0,0,0,0.25); pointer-events: none; animation: bubbleIn 0.15s ease both; }
+.ql-tip::after { content: ''; position: absolute; top: 100%; right: 14px; border: 6px solid transparent; border-top-color: #1a1a1a; }
+
+.icon-tip { display: none; position: fixed; background: #1a1a1a; color: #fff; font-size: 11px; line-height: 1.5; padding: 7px 11px; border-radius: 7px; white-space: nowrap; z-index: 9999; pointer-events: none; box-shadow: 0 4px 14px rgba(0,0,0,0.3); }
+.icon-tip::after { content: ''; position: absolute; top: 50%; right: -12px; transform: translateY(-50%); border: 6px solid transparent; border-left-color: #1a1a1a; }
+
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 300; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(2px); }
+.modal-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+.modal { background: var(--modal-bg); border: 1px solid var(--modal-border); border-top: 3px solid var(--auburn); border-radius: var(--radius); max-width: 420px; width: 100%; max-height: 88vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.2); animation: slideUp 0.22s cubic-bezier(.4,0,.2,1); }
+@keyframes slideUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 15px 18px; border-bottom: 1px solid var(--border-soft); }
+.modal-header h2 { font-size: 13px; font-weight: 900; color: var(--text); }
+.modal-close { background: transparent; border: none; color: var(--text-muted); font-size: 15px; cursor: pointer; padding: 2px 6px; border-radius: 4px; transition: background 0.2s, color 0.2s; line-height: 1; }
+.modal-close:hover { background: var(--surface3); color: var(--text); }
+.modal-body { padding: 18px; display: flex; flex-direction: column; gap: 16px; }
+.modal-section-title { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--auburn); margin-bottom: 7px; display: flex; align-items: center; gap: 8px; }
+.modal-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border-soft); }
+.modal-section p { font-size: 12px; color: var(--text-muted); line-height: 1.8; }
+.modal-section p strong { color: var(--text); font-weight: 700; }
+.modal-section a { color: var(--auburn); font-weight: 700; text-decoration: none; }
+.modal-section a:hover { text-decoration: underline; }
+.modal-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; }
+.modal-table th { text-align: left; padding: 5px 8px; color: var(--text-muted); font-weight: 700; font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 1px solid var(--border-soft); }
+.modal-table td { padding: 6px 8px; color: var(--text-muted); border-bottom: 1px solid var(--border-soft); }
+.modal-table td strong { color: var(--text); }
+.modal-table tr:last-child td { border-bottom: none; }
+.modal-footer { padding: 11px 18px; border-top: 1px solid var(--border-soft); font-size: 11px; color: var(--text-muted); text-align: center; }
+.modal-footer a { color: var(--auburn); font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+.modal-footer a:hover { text-decoration: underline; }
+
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+.field .hint { font-size: 10px; color: var(--text-muted); opacity: 0.7; }
+.field input, .field textarea { font-family: 'Red Hat Display', sans-serif; font-size: 13px; border-radius: 6px; padding: 9px 12px; outline: none; resize: none; transition: border-color 0.2s, box-shadow 0.2s; }
+[data-theme="dark"] .field input, [data-theme="dark"] .field textarea { background: #1a1a1a; border: 1.5px solid rgba(255,255,255,0.08); color: #f0f0f0; }
+[data-theme="light"] .field input, [data-theme="light"] .field textarea { background: #f5f3f0; border: 1.5px solid rgba(163,22,26,0.15); color: #1a1a1a; }
+[data-theme="dark"] .field input:focus, [data-theme="dark"] .field textarea:focus { border-color: var(--purple); box-shadow: 0 0 0 2px var(--purple-soft); }
+[data-theme="light"] .field input:focus, [data-theme="light"] .field textarea:focus { border-color: var(--auburn); box-shadow: 0 0 0 2px rgba(163,22,26,0.1); }
+.field input.error, .field textarea.error { border-color: var(--auburn) !important; }
+.field textarea { min-height: 90px; }
+.btn-send { width: 100%; padding: 11px; background: var(--auburn); color: #fff; border: none; border-radius: 6px; font-family: 'Red Hat Display', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+.btn-send:hover { background: var(--auburn-dark); }
+.btn-send:disabled { background: #555; cursor: not-allowed; }
+.sent-state { display: none; flex-direction: column; align-items: center; gap: 10px; padding: 32px 18px; text-align: center; }
+.sent-state.visible { display: flex; animation: fadeIn 0.3s ease; }
+.sent-check { width: 48px; height: 48px; border-radius: 50%; background: rgba(39,174,96,0.12); display: flex; align-items: center; justify-content: center; font-size: 22px; color: #27ae60; }
+.sent-title { font-size: 14px; font-weight: 900; color: var(--text); }
+.sent-desc { font-size: 12px; line-height: 1.7; color: var(--text-muted); }
+.btn-close-sent { margin-top: 4px; padding: 9px 24px; background: transparent; border: 1.5px solid var(--auburn); border-radius: 6px; color: var(--auburn); font-family: 'Red Hat Display', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+.btn-close-sent:hover { background: rgba(163,22,26,0.06); }
+
+@media (max-width: 600px) {
+  .header-right { display: none; }
+  .mobile-controls { display: flex; }
+  .quick-links { display: none; }
+  .header-title p { display: none; }
+  .header-title h1 { font-size: 20px; }
+  .header-inner { padding: 14px 16px 12px; }
+  .emma-quick { display: inline-flex; align-items: center; padding: 5px 10px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); cursor: pointer; text-decoration: none; position: relative; transition: background 0.2s; flex-shrink: 0; }
+  .emma-quick span { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 0.05em; }
+  .emma-quick::after { content: ''; position: absolute; bottom: 3px; left: 10px; right: 10px; height: 1.5px; background: rgba(255,255,255,0.3); border-radius: 99px; transition: background 0.2s, transform 0.2s; transform: scaleX(0.5); transform-origin: left; }
+  .emma-quick:hover::after { background: #e8bc30; transform: scaleX(1); }
+  .app-layout { grid-template-columns: 1fr; }
+  .col-right { position: static; }
+  .col-actions { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .action-btns { display: none; }
+  .main { padding: 12px 14px 40px; }
+  .bubble { }
+}
+
+.fade-up { animation: fadeUp 0.45s ease both; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+</style>
+</head>
+<body>
+
+
+<div class="bubble desktop" id="bubble"></div>
+<div class="ql-tip" id="qlTip"></div>
+<div class="icon-tip" id="iconTip"></div>
+<div class="ql-dropdown" id="qlDropdown">
+  <div class="ql-toggle-row" onclick="toggleThemeMenu()">
+    <span class="ql-toggle-label"><span id="menuIcon">☀️</span><span id="menuLabel">Modo claro</span></span>
+    <span class="ql-toggle-pill" id="menuPill">Claro</span>
+  </div>
+  <div class="ql-divider"></div>
+  <a class="ql-item" href="https://admisiones.cuc.edu.co/sgacampus/" target="_blank" rel="noopener"><span class="ql-item-icon">🎓</span><span>SICUC<span class="ql-item-sub">Sistema académico</span></span></a>
+  <a class="ql-item" href="https://aulavirtual.cuc.edu.co/" target="_blank" rel="noopener"><span class="ql-item-icon">📚</span><span>MOODLE<span class="ql-item-sub">Aula virtual</span></span></a>
+  <a class="ql-item" href="#" id="emmaMenuItem"><span class="ql-item-icon">📱</span><span>EMMA<span class="ql-item-sub">App móvil</span></span></a>
+  <a class="ql-item" href="https://emma.cuc.edu.co/" target="_blank" rel="noopener"><span class="ql-item-icon">🌐</span><span>EMMA WEB<span class="ql-item-sub">Portal estudiantil</span></span></a>
+</div>
+
+
+<div class="top-header">
+  <div class="header-inner">
+    <div class="header-top-row">
+      <div class="cuc-logo">
+        <svg width="76" height="26" viewBox="0 0 206.601 72.201" xmlns="http://www.w3.org/2000/svg">
+          <g stroke-linecap="round" fill-rule="nonzero">
+            <path d="M 74.101 41.5 L 74.101 1.1 L 81.801 1.1 L 81.801 41.5 Q 81.801 48.7 84.401 54 Q 87.001 59.3 91.801 62.2 Q 96.601 65.1 103.001 65.1 Q 109.501 65.1 114.251 62.2 Q 119.001 59.3 121.601 54 Q 124.201 48.7 124.201 41.5 L 124.201 1.1 L 131.901 1.1 L 131.901 41.5 Q 131.901 50.9 128.351 57.8 Q 124.801 64.7 118.351 68.45 Q 111.901 72.2 103.001 72.2 Q 94.101 72.2 87.601 68.45 Q 81.101 64.7 77.601 57.8 Q 74.101 50.9 74.101 41.5 Z M 64.001 11.5 L 58.901 16.9 Q 54.801 12.2 48.801 9.65 Q 42.801 7.1 36.301 7.1 Q 30.201 7.1 25.001 9.3 Q 19.801 11.5 15.951 15.45 Q 12.101 19.4 9.951 24.65 Q 7.801 29.9 7.801 36.1 Q 7.801 42.2 9.951 47.5 Q 12.101 52.8 16.001 56.75 Q 19.901 60.7 25.151 62.9 Q 30.401 65.1 36.501 65.1 Q 43.001 65.1 48.901 62.55 Q 54.801 60 58.801 55.5 L 63.801 60.7 Q 60.301 64.3 55.951 66.9 Q 51.601 69.5 46.601 70.85 Q 41.601 72.2 36.301 72.2 Q 28.701 72.2 22.101 69.45 Q 15.501 66.7 10.501 61.75 Q 5.501 56.8 2.751 50.25 Q 0.001 43.7 0.001 36.1 Q 0.001 28.5 2.751 21.95 Q 5.501 15.4 10.501 10.45 Q 15.501 5.5 22.101 2.75 Q 28.701 0 36.301 0 Q 41.801 0 46.851 1.35 Q 51.901 2.7 56.251 5.25 Q 60.601 7.8 64.001 11.5 Z M 206.601 11.5 L 201.501 16.9 Q 197.401 12.2 191.401 9.65 Q 185.401 7.1 178.901 7.1 Q 172.801 7.1 167.601 9.3 Q 162.401 11.5 158.551 15.45 Q 154.701 19.4 152.551 24.65 Q 150.401 29.9 150.401 36.1 Q 150.401 42.2 152.551 47.5 Q 154.701 52.8 158.601 56.75 Q 162.501 60.7 167.751 62.9 Q 173.001 65.1 179.101 65.1 Q 185.601 65.1 191.501 62.55 Q 197.401 60 201.401 55.5 L 206.401 60.7 Q 202.901 64.3 198.551 66.9 Q 194.201 69.5 189.201 70.85 Q 184.201 72.2 178.901 72.2 Q 171.301 72.2 164.701 69.45 Q 158.101 66.7 153.101 61.75 Q 148.101 56.8 145.351 50.25 Q 142.601 43.7 142.601 36.1 Q 142.601 28.5 145.351 21.95 Q 148.101 15.4 153.101 10.45 Q 158.101 5.5 164.701 2.75 Q 171.301 0 178.901 0 Q 184.401 0 189.451 1.35 Q 194.501 2.7 198.851 5.25 Q 203.201 7.8 206.601 11.5 Z" vector-effect="non-scaling-stroke"/>
+          </g>
+        </svg>
+        <div class="cuc-wordmark"><span>Universidad</span><span>de la Costa</span></div>
+      </div>
+      <div class="header-right">
+        <button class="theme-toggle" onclick="toggleTheme()">
+          <span class="toggle-icon">☀️</span>
+          <span id="themeLabel">Claro</span>
+        </button>
+      </div>
+      <div class="mobile-controls">
+        <button class="header-icon-btn" id="btnFeedbackMobile" data-tip="Buzón de sugerencias">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <button class="header-icon-btn" id="btnHelpMobile" data-tip="Acerca de la app">?</button>
+        <button class="ql-menu-btn" id="menuBtn" onclick="toggleMenu(event)">⋮</button>
+      </div>
+    </div>
+    <div class="header-bottom-row">
+      <div class="header-title">
+        <h1>Consultor<br>de <span>Notas</span></h1>
+        <p>Ingresa tus puntos por corte (0–1.5) y calcula cuánto necesitas para pasar.</p>
+      </div>
+      <div class="quick-links">
+        <a class="ql-btn" href="https://admisiones.cuc.edu.co/sgacampus/" target="_blank" rel="noopener" data-tip="Sistema académico · Notas,&#10;horarios y trámites"><span>SICUC</span></a>
+        <div class="ql-sep"></div>
+        <a class="ql-btn" href="https://aulavirtual.cuc.edu.co/" target="_blank" rel="noopener" data-tip="Aula virtual · Materiales&#10;y actividades de tus cursos"><span>MOODLE</span></a>
+        <div class="ql-sep"></div>
+        <a class="ql-btn" href="#" id="emmaAppBtn" target="_blank" rel="noopener" data-tip="Abre la app EMMA en&#10;tu tienda según tu dispositivo"><span>EMMA</span></a>
+        <div class="ql-sep"></div>
+        <a class="ql-btn" href="https://emma.cuc.edu.co/" target="_blank" rel="noopener" data-tip="Portal web EMMA · Servicios&#10;estudiantiles en línea"><span>EMMA WEB</span></a>
+      </div>
+      <a class="emma-quick" href="#" id="emmaQuickMobile"><span>EMMA</span></a>
+    </div>
+  </div>
+</div>
+<div class="gold-rule"></div>
+
+
+<div class="main">
+  <div class="app-layout">
+
+    
+    <div class="col-left">
+      <div class="section-label">Cortes</div>
+
+      
+      <div class="card fade-up">
+        <div class="corte-main-row">
+          <div class="corte-num">1</div>
+          <div class="corte-info"><div class="corte-name">Corte 1</div><div class="corte-sub">Puntos obtenidos · máx 1.50 pts</div></div>
+          <div class="corte-right">
+            <div class="pts-group">
+              <div class="input-wrap">
+                <input type="number" class="main-input" id="c1" inputmode="decimal" min="0" step="any" placeholder="—" oninput="onMainInput(this,1.5,'corte'); calc(); save()">
+              </div>
+              <div class="pts-label">/ 1.50 pts</div>
+            </div>
+            <button class="expand-btn" id="btn1" onclick="toggleExpand('sub1','btn1')">▾</button>
+          </div>
+        </div>
+        <div class="sub-rows" id="sub1">
+          <div class="sub-row">
+            <div class="sub-accent"></div>
+            <div class="sub-info"><div class="sub-name">Actividad (10%)</div><div class="sub-hint">Nota de 0 a 5</div></div>
+            <div class="sub-pts"><span id="sp1a">—</span> pts</div>
+            <input type="number" class="sub-input" id="s1a" inputmode="decimal" min="0" step="any" placeholder="—" oninput="onSubInput('c1','s1a','s1b','sp1a','sp1b'); calc(); save()">
+          </div>
+          <div class="sub-row">
+            <div class="sub-accent"></div>
+            <div class="sub-info"><div class="sub-name">Parcial (20%)</div><div class="sub-hint">Nota de 0 a 5</div></div>
+            <div class="sub-pts"><span id="sp1b">—</span> pts</div>
+            <input type="number" class="sub-input" id="s1b" inputmode="decimal" min="0" step="any" placeholder="—" oninput="onSubInput('c1','s1a','s1b','sp1a','sp1b'); calc(); save()">
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="card fade-up" style="animation-delay:.05s">
+        <div class="corte-main-row">
+          <div class="corte-num">2</div>
+          <div class="corte-info"><div class="corte-name">Corte 2</div><div class="corte-sub">Puntos obtenidos · máx 1.50 pts</div></div>
+          <div class="corte-right">
+            <div class="pts-group">
+              <div class="input-wrap">
+                <input type="number" class="main-input" id="c2" inputmode="decimal" min="0" step="any" placeholder="—" oninput="onMainInput(this,1.5,'corte'); calc(); save()">
+              </div>
+              <div class="pts-label">/ 1.50 pts</div>
+            </div>
+            <button class="expand-btn" id="btn2" onclick="toggleExpand('sub2','btn2')">▾</button>
+          </div>
+        </div>
+        <div class="sub-rows" id="sub2">
+          <div class="sub-row">
+            <div class="sub-accent"></div>
+            <div class="sub-info"><div class="sub-name">Actividad (10%)</div><div class="sub-hint">Nota de 0 a 5</div></div>
+            <div class="sub-pts"><span id="sp2a">—</span> pts</div>
+            <input type="number" class="sub-input" id="s2a" inputmode="decimal" min="0" step="any" placeholder="—" oninput="onSubInput('c2','s2a','s2b','sp2a','sp2b'); calc(); save()">
+          </div>
+          <div class="sub-row">
+            <div class="sub-accent"></div>
+            <div class="sub-info"><div class="sub-name">Parcial (20%)</div><div class="sub-hint">Nota de 0 a 5</div></div>
+            <div class="sub-pts"><span id="sp2b">—</span> pts</div>
+            <input type="number" class="sub-input" id="s2b" inputmode="decimal" min="0" step="any" placeholder="—" oninput="onSubInput('c2','s2a','s2b','sp2a','sp2b'); calc(); save()">
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="card fade-up" style="animation-delay:.1s">
+        <div class="corte-main-row">
+          <div class="corte-num">3</div>
+          <div class="corte-info"><div class="corte-name">Corte 3</div><div class="corte-sub">Puntos obtenidos · máx 1.50 pts</div></div>
+          <div class="corte-right">
+            <div class="pts-group">
+              <div class="input-wrap">
+                <input type="number" class="main-input" id="c3" inputmode="decimal" min="0" step="any" placeholder="—" oninput="onMainInput(this,1.5,'corte'); calc(); save()">
+              </div>
+              <div class="pts-label">/ 1.50 pts</div>
+            </div>
+            <button class="expand-btn" id="btn3" onclick="toggleExpand('sub3','btn3')">▾</button>
+          </div>
+        </div>
+        <div class="sub-rows" id="sub3">
+          <div class="sub-row">
+            <div class="sub-accent"></div>
+            <div class="sub-info"><div class="sub-name">Actividad (10%)</div><div class="sub-hint">Nota de 0 a 5</div></div>
+            <div class="sub-pts"><span id="sp3a">—</span> pts</div>
+            <input type="number" class="sub-input" id="s3a" inputmode="decimal" min="0" step="any" placeholder="—" oninput="onSubInput('c3','s3a','s3b','sp3a','sp3b'); calc(); save()">
+          </div>
+          <div class="sub-row">
+            <div class="sub-accent"></div>
+            <div class="sub-info"><div class="sub-name">Parcial (20%)</div><div class="sub-hint">Nota de 0 a 5</div></div>
+            <div class="sub-pts"><span id="sp3b">—</span> pts</div>
+            <input type="number" class="sub-input" id="s3b" inputmode="decimal" min="0" step="any" placeholder="—" oninput="onSubInput('c3','s3a','s3b','sp3a','sp3b'); calc(); save()">
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="card-pg fade-up" style="animation-delay:.15s">
+        <div class="corte-main-row">
+          <div class="corte-tag">C4</div>
+          <div class="corte-info"><div class="corte-name">Prueba Genérica</div><div class="corte-sub">Examen general · máx 0.50 pts</div></div>
+          <div class="corte-right">
+            <div class="pts-group">
+              <div class="input-wrap">
+                <input type="number" class="main-input" id="c4" inputmode="decimal" min="0" step="any" placeholder="—" oninput="onMainInput(this,0.5,'c4'); calc(); save()">
+              </div>
+              <div class="pts-label">/ 0.50 pts</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-clear" onclick="clearAll()">↺ &nbsp; Limpiar todo</button>
+    </div>
+
+    
+    <div class="col-right">
+      <div class="section-label">Resultado</div>
+      <div id="result-wrap">
+        <div class="result-placeholder">
+          <div class="ph-title">Esperando notas</div>
+          <div class="ph-sub">Ingresa tus puntos<br>y el resultado aparecerá aquí</div>
+        </div>
+      </div>
+      
+      <div class="col-actions">
+        <div class="action-btns">
+          <button class="action-btn" onclick="openFeedback()" title="Buzón de sugerencias">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </button>
+          <button class="action-btn" onclick="openHelp()" title="Acerca de la app" style="font-weight:900;">?</button>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+          <div class="firma">
+            · No oficial ·
+            <a href="https://github.com/HeyAcosta" target="_blank" rel="noopener">
+              <svg height="11" width="11" viewBox="0 0 16 16"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              Acosta
+            </a>
+          </div>
+          <div class="version">v1.0</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal-overlay" id="helpModal" onclick="closeModalOutside(event,'helpModal')">
+  <div class="modal">
+    <div class="modal-header"><h2>Acerca de esta app</h2><button class="modal-close" onclick="closeHelp()">✕</button></div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-title">Sobre la app</div>
+        <p>Creé esta herramienta como estudiante de la CUC para facilitar el seguimiento de notas. <strong>No es oficial</strong> ni está afiliada a la institución.<br><br>No recopilo ningún dato. Todo el cálculo ocurre en tu dispositivo, nada sale a ningún servidor. Puedes usarla con total tranquilidad.</p>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Accesos rápidos</div>
+        <p>Los botones <strong>SICUC, MOODLE, EMMA</strong> y <strong>EMMA WEB</strong> te llevan directamente a las plataformas oficiales de la CUC, sin ningún intermediario. Son simples atajos.</p>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Sistema de notas CUC</div>
+        <p>Cada materia se divide en 4 cortes que suman <strong>5.0 puntos</strong>. La nota mínima para aprobar es <strong>3.0</strong>.</p>
+        <table class="modal-table">
+          <thead><tr><th>Corte</th><th>Peso</th><th>Máx</th><th>Composición</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Corte 1</strong></td><td>30%</td><td>1.50</td><td>Actividad 10% + Parcial 20%</td></tr>
+            <tr><td><strong>Corte 2</strong></td><td>30%</td><td>1.50</td><td>Actividad 10% + Parcial 20%</td></tr>
+            <tr><td><strong>Corte 3</strong></td><td>30%</td><td>1.50</td><td>Actividad 10% + Parcial 20%</td></tr>
+            <tr><td><strong>Prueba Genérica</strong></td><td>10%</td><td>0.50</td><td>Examen general</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:10px;">Puedes ingresar los puntos directamente <strong>(0–1.5)</strong>, o expandir cada corte para calcularlos desde tus notas de actividad y parcial <strong>(0–5)</strong>.</p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a href="https://github.com/HeyAcosta" target="_blank" rel="noopener">
+        <svg height="12" width="12" viewBox="0 0 16 16"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        github.com/HeyAcosta
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="feedbackModal" onclick="closeModalOutside(event,'feedbackModal')">
+  <div class="modal">
+    <div class="modal-header"><h2>Buzón de sugerencias</h2><button class="modal-close" onclick="closeFeedback()">✕</button></div>
+    <div class="modal-body" id="feedbackForm">
+      <p style="font-size:12px;color:var(--text-muted);line-height:1.8;">¿Encontraste algo raro o tienes una idea? Escríbeme. Me ayuda a saber si la app tiene usuarios activos y qué puedo mejorar. <strong style="color:var(--text);">El correo es opcional.</strong></p>
+      <div class="field">
+        <label>Correo o alias <span style="font-weight:400;text-transform:none;letter-spacing:0">(opcional)</span></label>
+        <input type="email" id="f-email" placeholder="ejemplo@cuc.edu.co">
+        <span class="hint">Solo si quieres que te responda.</span>
+      </div>
+      <div class="field">
+        <label>Mensaje *</label>
+        <textarea id="f-msg" placeholder="Cuéntame qué encontraste, qué mejorarías o simplemente si la app te fue útil 😄"></textarea>
+      </div>
+      <button class="btn-send" id="btn-send" onclick="sendFeedback()">Enviar</button>
+    </div>
+    <div class="sent-state" id="sentState">
+      <div class="sent-check">✓</div>
+      <div class="sent-title">Mensaje recibido</div>
+      <p class="sent-desc">Gracias por tomarte el tiempo.<br>Lo leeré con atención.</p>
+      <button class="btn-close-sent" onclick="closeFeedback()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const FORM_URL      = 'https://docs.google.com/forms/d/e/1FAIpQLSeP-dgsz2zc1wWeaaxSv8YMXSUKc4KHsI_lVlJn-KiPYSmRKQ/formResponse';
+const CAMPO_CORREO  = 'entry.1293786588';
+const CAMPO_MENSAJE = 'entry.545233330';
+
+(function(){
+  const ua  = navigator.userAgent||'';
+  const url = /iPad|iPhone|iPod/.test(ua)
+    ? 'https://apps.apple.com/co/app/emma-app-cuc/id1570288457'
+    : 'https://play.google.com/store/apps/details?id=co.edu.cuc.emma&hl=es';
+  ['emmaAppBtn','emmaMenuItem','emmaQuickMobile'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.href = url;
+  });
+})();
+
+function toggleTheme(){
+  const html   = document.documentElement;
+  const isDark = html.getAttribute('data-theme')==='dark';
+  html.setAttribute('data-theme', isDark?'light':'dark');
+  document.getElementById('themeLabel').textContent  = isDark?'Oscuro':'Claro';
+  document.querySelector('.toggle-icon').textContent = isDark?'🌙':'☀️';
+  updateBubbleClass();
+}
+function toggleThemeMenu(){
+  const html   = document.documentElement;
+  const isDark = html.getAttribute('data-theme')==='dark';
+  html.setAttribute('data-theme', isDark?'light':'dark');
+  document.getElementById('menuIcon').textContent  = isDark?'🌙':'☀️';
+  document.getElementById('menuLabel').textContent = isDark?'Modo oscuro':'Modo claro';
+  document.getElementById('menuPill').textContent  = isDark?'Oscuro':'Claro';
+  updateBubbleClass();
+  document.getElementById('qlDropdown').classList.remove('open');
+}
+function updateBubbleClass(){
+  const b = document.getElementById('bubble');
+  b.className = 'bubble ' + (window.innerWidth<=600?'mobile':'desktop');
+}
+
+function toggleMenu(e){
+  e.stopPropagation();
+  const dd  = document.getElementById('qlDropdown');
+  const btn = document.getElementById('menuBtn');
+  if(dd.classList.contains('open')){ dd.classList.remove('open'); return; }
+  const r = btn.getBoundingClientRect();
+  dd.style.top   = (r.bottom + 6) + 'px';
+  dd.style.right = (window.innerWidth - r.right) + 'px';
+  dd.style.left  = 'auto';
+  dd.classList.add('open');
+}
+document.addEventListener('click', e=>{
+  const dd  = document.getElementById('qlDropdown');
+  const btn = document.getElementById('menuBtn');
+  if(btn && !btn.contains(e.target) && !dd.contains(e.target)) dd.classList.remove('open');
+});
+
+function toggleExpand(subId, btnId){
+  document.getElementById(subId).classList.toggle('open');
+  document.getElementById(btnId).classList.toggle('open');
+}
+
+/* ── FORMATEO LIMPIO ── */
+function cleanInput(str){
+  if(!str) return str;
+  // 09 → 0.9
+  if(/^0\d/.test(str) && !str.startsWith('0.')) return '0.' + str.slice(1);
+  return str;
+}
+function fmtDisplay(num){
+  if(num===null||isNaN(num)) return '—';
+  return String(parseFloat(num.toPrecision(10)));
+}
+
+function readPts(id, max){
+  const el  = document.getElementById(id);
+  const str = cleanInput(el.value);
+  const num = parseFloat(str);
+  if(isNaN(num)||el.value==='') return null;
+  return Math.min(Math.max(num,0), max);
+}
+
+let bubbleTimer;
+function showBubble(el, msg){
+  const b        = document.getElementById('bubble');
+  const isMobile = window.innerWidth <= 600;
+  b.className    = 'bubble ' + (isMobile?'mobile':'desktop') + ' visible';
+  b.innerHTML    = msg;
+  b.style.display= 'block';
+  const r  = el.getBoundingClientRect();
+  const bw = b.offsetWidth;
+  const bh = b.offsetHeight;
+  let top, left;
+  if(isMobile){
+    top  = r.top + r.height/2 - bh/2;
+    left = r.left - bw - 14;
+    top  = Math.max(8, Math.min(top, window.innerHeight - bh - 8));
+    left = Math.max(8, left);
+  } else {
+    top  = r.top - bh - 14 + window.scrollY;
+    left = r.left + window.scrollX;
+  }
+  b.style.top  = top + 'px';
+  b.style.left = left + 'px';
+  clearTimeout(bubbleTimer);
+  bubbleTimer = setTimeout(()=>{
+    b.classList.remove('visible');
+    b.style.display = 'none';
+  }, 4000);
+}
+
+function scheduleAdjust(el, max, msg){
+  clearTimeout(el._deb);
+  el._deb = setTimeout(()=>{
+    const str = cleanInput(el.value);
+    if(str !== el.value) el.value = str;
+    const val = parseFloat(el.value);
+    if(isNaN(val)||el.value==='') return;
+    if(val > max){
+      el.value = fmtDisplay(max);
+      el.classList.add('adjusted');
+      showBubble(el, msg);
+      setTimeout(()=>el.classList.remove('adjusted'), 4000);
+    } else if(val < 0){
+      el.value = '0';
+      showBubble(el, `⚠️ La nota mínima es <strong>0</strong>.<br>Lo ajustamos automáticamente 😉`);
+    }
+  }, 1000);
+}
+
+function onMainInput(el, max, type){
+  const msg = type==='corte'
+    ? `⚠️ Este corte tiene un máximo de <strong>1.5 pts</strong>.<br>Lo ajustamos automáticamente 😉`
+    : `⚠️ La Prueba Genérica tiene un máximo de <strong>0.5 pts</strong>.<br>Lo ajustamos automáticamente 😉`;
+  scheduleAdjust(el, max, msg);
+  // limpiar sub-inputs si se edita el principal
+  const n = el.id.slice(1);
+  if(n==='1'||n==='2'||n==='3'){
+    ['a','b'].forEach(s=>{
+      const sub = document.getElementById('s'+n+s);
+      if(sub) sub.value = '';
+      const sp = document.getElementById('sp'+n+s);
+      if(sp) sp.textContent = '—';
+    });
+  }
+}
+
+function onSubInput(mainId, aId, bId, spAId, spBId){
+  const aEl = document.getElementById(aId);
+  const bEl = document.getElementById(bId);
+  const ca  = cleanInput(aEl.value); if(ca!==aEl.value) aEl.value=ca;
+  const cb  = cleanInput(bEl.value); if(cb!==bEl.value) bEl.value=cb;
+  const a   = parseFloat(aEl.value);
+  const b   = parseFloat(bEl.value);
+  const msgSub = `⚠️ La nota máxima es <strong>5</strong>.<br>Lo ajustamos automáticamente 😉`;
+  scheduleAdjust(aEl, 5, msgSub);
+  scheduleAdjust(bEl, 5, msgSub);
+  document.getElementById(spAId).textContent = !isNaN(a)?fmtDisplay(parseFloat((a*0.1).toPrecision(10))):'—';
+  document.getElementById(spBId).textContent = !isNaN(b)?fmtDisplay(parseFloat((b*0.2).toPrecision(10))):'—';
+  if(!isNaN(a)&&!isNaN(b)){
+    const pts = parseFloat((a*0.1+b*0.2).toPrecision(10));
+    document.getElementById(mainId).value = fmtDisplay(pts);
+  } else {
+    document.getElementById(mainId).value = '';
+  }
+}
+
+function calc(){
+  const PASS = 3.0;
+  const p1=readPts('c1',1.5), p2=readPts('c2',1.5), p3=readPts('c3',1.5), p4=readPts('c4',0.5);
+  const wrap = document.getElementById('result-wrap');
+
+  if(p1===null&&p2===null&&p3===null&&p4===null){
+    wrap.innerHTML=`<div class="result-placeholder"><div class="ph-title">Esperando notas</div><div class="ph-sub">Ingresa tus puntos<br>y el resultado aparecerá aquí</div></div>`;
+    return;
+  }
+
+  const known    = parseFloat(((p1||0)+(p2||0)+(p3||0)+(p4||0)).toPrecision(10));
+  const maxPend  = (p1===null?1.5:0)+(p2===null?1.5:0)+(p3===null?1.5:0)+(p4===null?0.5:0);
+  const maxTotal = parseFloat((known+maxPend).toPrecision(10));
+  const needed   = parseFloat((PASS-known).toPrecision(10));
+  const allFilled= p1!==null&&p2!==null&&p3!==null&&p4!==null;
+
+  let state, label, big, icon, desc, fillColor;
+
+  if(needed<=0){
+    state='win'; label='Materia ganada'; big=fmtDisplay(known); icon='✓';
+    desc=`Llevas <strong>${fmtDisplay(known)} pts</strong> — aprobaste con <strong>${fmtDisplay(Math.abs(needed))} pts</strong> de margen.`;
+    fillColor='#27ae60';
+  } else if(maxTotal<PASS){
+    state='lose'; label='Imposible recuperar'; big='—'; icon='✗';
+    desc=`Llevas <strong>${fmtDisplay(known)} pts</strong>. Incluso con el máximo en cortes pendientes solo llegarías a <strong>${fmtDisplay(maxTotal)}</strong>.`;
+    fillColor='#A3161A';
+  } else {
+    state=needed>2?'warn':'neutral'; label='Te faltan'; big=fmtDisplay(needed)+' pts'; icon='?';
+    desc=`Llevas <strong>${fmtDisplay(known)} pts</strong>. Necesitas <strong>${fmtDisplay(needed)} pts</strong> más entre los cortes pendientes.`;
+    fillColor=needed<=1?'#27ae60':needed<=2?'#C9A227':'#A3161A';
+  }
+
+  let distribHTML='';
+  if(needed>0&&maxTotal>=PASS&&!allFilled){
+    const pending=[];
+    if(p1===null) pending.push({name:'Corte 1',max:1.5});
+    if(p2===null) pending.push({name:'Corte 2',max:1.5});
+    if(p3===null) pending.push({name:'Corte 3',max:1.5});
+    if(p4===null) pending.push({name:'Genérica',max:0.5});
+    const totalMaxP=pending.reduce((a,b)=>a+b.max,0);
+    const rows=pending.map(c=>{
+      const sug  =Math.min((c.max/totalMaxP)*needed,c.max);
+      const pct  =(sug/c.max)*100;
+      const nota =parseFloat((sug/c.max*5).toPrecision(10));
+      const color=nota<3?'#27ae60':nota<=4?'#C9A227':'#A3161A';
+      return `<div class="distrib-row"><div class="distrib-name">${c.name}</div><div class="distrib-bar-wrap"><div class="distrib-bar" style="width:${pct.toFixed(1)}%;background:${color};"></div></div><div class="distrib-val">${fmtDisplay(parseFloat(sug.toPrecision(10)))} pts <span>≈ nota ${fmtDisplay(nota)}</span></div></div>`;
+    }).join('');
+    distribHTML=`<div class="distrib"><div class="distrib-title">Distribución sugerida para llegar al 3.0</div>${rows}</div>`;
+  }
+
+  let ritmoHTML='';
+  if(!allFilled){
+    const cursados=[p1,p2,p3,p4].filter(x=>x!==null).length;
+    if(cursados>0){
+      const maxC=(p1!==null?1.5:0)+(p2!==null?1.5:0)+(p3!==null?1.5:0)+(p4!==null?0.5:0);
+      const ratio=known/maxC;
+      let msg,color;
+      if(needed<=0){msg='Vas más que bien, sigue así.';color='#27ae60';}
+      else if(ratio>=0.7){msg='Vas bien encaminado, mantén el ritmo.';color='#27ae60';}
+      else if(ratio>=0.5){msg='Vas raspando, no aflojes.';color='#C9A227';}
+      else{msg='Necesitas recuperar en los cortes que faltan.';color='#A3161A';}
+      ritmoHTML=`<div class="ritmo"><div class="ritmo-dot" style="background:${color};"></div><span style="color:${color};font-weight:600;font-size:12px;">${msg}</span></div>`;
+    }
+  }
+
+  let brows='';
+  if(p1!==null) brows+=brow('Corte 1',fmtDisplay(p1));
+  if(p2!==null) brows+=brow('Corte 2',fmtDisplay(p2));
+  if(p3!==null) brows+=brow('Corte 3',fmtDisplay(p3));
+  if(p4!==null) brows+=brow('Genérica',fmtDisplay(p4));
+  const bdHtml=brows?`<div class="breakdown"><div class="brow-title">Desglose</div>${brows}<div class="brow-row total"><span>Total acumulado</span><span class="bv">${fmtDisplay(known)} / 5</span></div></div>`:'';
+
+  const barPct=Math.min(known/5,1);
+  wrap.innerHTML=`
+  <div class="result-card ${state}">
+    <div class="res-top">
+      <div><div class="res-label">${label}</div><div class="res-big">${big}</div></div>
+      <div class="res-icon">${icon}</div>
+    </div>
+    <div class="res-desc">${desc}</div>
+    <div class="progress-wrap">
+      <div class="progress-meta"><span>0</span><span>${fmtDisplay(known)} / 5 pts</span></div>
+      <div class="progress-track">
+        <div class="progress-fill" style="width:${(barPct*100).toFixed(1)}%;background:${fillColor};"></div>
+        <div class="progress-min"><div class="tick"></div><div class="tick-label">3.0</div></div>
+      </div>
+    </div>
+    ${distribHTML}${ritmoHTML}${bdHtml}
+  </div>`;
+}
+
+function brow(l,v){return `<div class="brow-row"><span>${l}</span><span class="bv">${v} pts</span></div>`;}
+
+function save(){
+  const d={};
+  ['c1','c2','c3','c4','s1a','s1b','s2a','s2b','s3a','s3b'].forEach(id=>{ d[id]=document.getElementById(id).value; });
+  localStorage.setItem('cuc_v1',JSON.stringify(d));
+}
+function load(){
+  const raw=localStorage.getItem('cuc_v1');
+  if(!raw) return;
+  const d=JSON.parse(raw);
+  ['c1','c2','c3','c4','s1a','s1b','s2a','s2b','s3a','s3b'].forEach(id=>{ if(d[id]) document.getElementById(id).value=d[id]; });
+  ['1','2','3'].forEach(n=>{
+    const a=parseFloat(document.getElementById('s'+n+'a')?.value);
+    const b=parseFloat(document.getElementById('s'+n+'b')?.value);
+    if(!isNaN(a)) document.getElementById('sp'+n+'a').textContent=fmtDisplay(parseFloat((a*0.1).toPrecision(10)));
+    if(!isNaN(b)) document.getElementById('sp'+n+'b').textContent=fmtDisplay(parseFloat((b*0.2).toPrecision(10)));
+  });
+  calc();
+}
+
+function clearAll(){
+  ['c1','c2','c3','c4','s1a','s1b','s2a','s2b','s3a','s3b'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.value=''; el.classList.remove('adjusted');
+    clearTimeout(el._deb);
+  });
+  ['sp1a','sp1b','sp2a','sp2b','sp3a','sp3b'].forEach(id=>document.getElementById(id).textContent='—');
+  ['sub1','sub2','sub3'].forEach(id=>document.getElementById(id).classList.remove('open'));
+  ['btn1','btn2','btn3'].forEach(id=>document.getElementById(id).classList.remove('open'));
+  document.getElementById('result-wrap').innerHTML=`<div class="result-placeholder"><div class="ph-title">Esperando notas</div><div class="ph-sub">Ingresa tus puntos<br>y el resultado aparecerá aquí</div></div>`;
+  const b=document.getElementById('bubble'); b.classList.remove('visible'); b.style.display='none';
+  localStorage.removeItem('cuc_v1');
+}
+
+const qlTip=document.getElementById('qlTip');
+let qlTimer;
+document.querySelectorAll('.ql-btn[data-tip]').forEach(btn=>{
+  btn.addEventListener('mouseenter',()=>{
+    qlTip.innerHTML=btn.dataset.tip.replace(/&#10;/g,'<br>');
+    qlTip.style.display='block';
+    const r=btn.getBoundingClientRect();
+    qlTip.style.top=(r.top-qlTip.offsetHeight-12+window.scrollY)+'px';
+    qlTip.style.right=(window.innerWidth-r.right)+'px';
+    qlTip.style.left='auto';
+    clearTimeout(qlTimer);
+  });
+  btn.addEventListener('mouseleave',()=>{ qlTimer=setTimeout(()=>{qlTip.style.display='none';},150); });
+});
+
+const iconTip=document.getElementById('iconTip');
+let iconTimer;
+document.querySelectorAll('.header-icon-btn[data-tip]').forEach(btn=>{
+  btn.addEventListener('mouseenter',()=>{
+    iconTip.textContent=btn.dataset.tip;
+    iconTip.style.display='block';
+    const r=btn.getBoundingClientRect();
+    iconTip.style.top=(r.top+r.height/2-iconTip.offsetHeight/2)+'px';
+    iconTip.style.left=(r.left-iconTip.offsetWidth-10)+'px';
+    clearTimeout(iconTimer);
+  });
+  btn.addEventListener('mouseleave',()=>{ iconTimer=setTimeout(()=>{iconTip.style.display='none';},150); });
+  let pressT;
+  btn.addEventListener('touchstart',()=>{
+    pressT=setTimeout(()=>{
+      iconTip.textContent=btn.dataset.tip;
+      iconTip.style.display='block';
+      const r=btn.getBoundingClientRect();
+      iconTip.style.top=(r.top+r.height/2-iconTip.offsetHeight/2)+'px';
+      iconTip.style.left=(r.left-iconTip.offsetWidth-10)+'px';
+      setTimeout(()=>{iconTip.style.display='none';},2500);
+    },500);
+  });
+  btn.addEventListener('touchend',()=>clearTimeout(pressT));
+  btn.addEventListener('touchmove',()=>clearTimeout(pressT));
+  btn.addEventListener('click',()=>{
+    if(btn.id==='btnFeedbackMobile') openFeedback();
+    if(btn.id==='btnHelpMobile')     openHelp();
+  });
+});
+
+function openHelp(){ document.getElementById('helpModal').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeHelp(){ document.getElementById('helpModal').classList.remove('open'); document.body.style.overflow=''; }
+function openFeedback(){
+  document.getElementById('feedbackModal').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.getElementById('feedbackForm').style.display='flex';
+  document.getElementById('sentState').classList.remove('visible');
+  document.getElementById('f-email').value='';
+  document.getElementById('f-msg').value='';
+  document.getElementById('f-msg').classList.remove('error');
+  const btn=document.getElementById('btn-send');
+  btn.disabled=false; btn.textContent='Enviar';
+}
+function closeFeedback(){ document.getElementById('feedbackModal').classList.remove('open'); document.body.style.overflow=''; }
+function closeModalOutside(e,id){ if(e.target===document.getElementById(id)){ closeHelp(); closeFeedback(); } }
+
+/* ── FEEDBACK ── */
+function sendFeedback(){
+  const email=document.getElementById('f-email').value.trim();
+  const msg=document.getElementById('f-msg').value.trim();
+  if(!msg){ document.getElementById('f-msg').classList.add('error'); document.getElementById('f-msg').focus(); return; }
+  document.getElementById('f-msg').classList.remove('error');
+  const btn=document.getElementById('btn-send');
+  btn.disabled=true; btn.textContent='Enviando...';
+  const fd=new FormData();
+  fd.append(CAMPO_MENSAJE,msg);
+  if(email) fd.append(CAMPO_CORREO,email);
+  fetch(FORM_URL,{method:'POST',mode:'no-cors',body:fd})
+  .finally(()=>{
+    document.getElementById('feedbackForm').style.display='none';
+    document.getElementById('sentState').classList.add('visible');
+  });
+}
+
+load();
+updateBubbleClass();
+window.addEventListener('resize',updateBubbleClass);
+</script>
+</body>
+</html>
